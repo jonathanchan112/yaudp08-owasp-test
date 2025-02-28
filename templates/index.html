@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to the Vulnerable App</h1>
+    <form action="/search" method="get">
+        <input type="text" name="query" placeholder="Search users">
+        <button type="submit">Search</button>
+    </form>
+    <form action="/transfer" method="post">
+        <input type="number" name="amount" placeholder="Amount">
+        <input type="text" name="to_user" placeholder="To User">
+        <button type="submit">Transfer</button>
+    </form>
+</body>
+</html>
+
+
