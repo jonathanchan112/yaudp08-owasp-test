@@ -1,0 +1,35 @@
+name: Coverity
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+ 
+jobs:
+  Coverity:
+ 
+    runs-on: self-hosted
+ 
+    env:
+      COV_URL: ${{ secrets.COV_URL }}
+      COV_USER: ${{ secrets.COV_USER }}
+      COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
+      COVERITY_PROJECT: insecure-bank
+      COVBIN: /opt/coverity/analysis/current/bin
+      BLDCMD: mvn -B clean compile
+      CHECKERS: --webapp-security
+ 
+    steps:
+    - uses: AutoModality/action-clean@v1
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 11
+ 
+    - name: Coverity Full Scan
+      run: |
+        export PATH=$PATH:$COVBIN
+        set -x
+        cov-build --dir idir --fs-capture-search $GITHUB_WORKSPACE $BLDCMD
+        cov-analyze --dir idir --ticker-mode none --strip-path $GITHUB_WORKSPACE $CHECKERS
+        cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_PROJECT-${GITHUB_REF##*/} --scm git \
+          --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
